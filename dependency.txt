@@ -1,0 +1,8 @@
+packages need for this program
+
+1. django
+2. elasticsearch
+3. kibana (for testing)
+4. pillow
+5. elasticsearh python client
+
