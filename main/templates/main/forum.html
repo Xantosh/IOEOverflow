@@ -3,5 +3,11 @@
     </head>
     <body>
          this is the forum page
+         <br>
+         <form action="" method = "post" enctype="multipart/form-data">
+             {%csrf_token%}
+         {{form}}
+         <input type="submit">
+         </form>
     </body>
 </html>
