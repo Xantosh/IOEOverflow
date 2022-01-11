@@ -1,0 +1,51 @@
+
+-> For creating the index
+
+PUT <index_name> 
+{
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "dark_k-fold_axon_analyzer":{
+                          "type": "custom",
+                                    "tokenizer":"standard",
+                                              "filter":["stemmer","lowercase","C-moon_n-gram_filter"]
+                                                        
+                                                                
+                }
+                      
+            },
+                "filter": {
+                    "C-moon_n-gram_filter":{
+                              "type":"edge_ngram",
+                                        "min_gram":3,
+                                                  "max_gram":15
+                                                          
+                    }
+                          
+                }
+                    
+        }
+          
+    }
+
+}
+
+-> For searching
+
+GET/_search
+{
+    "query":{
+        "match":{
+            "text":{
+                    "query":"<search query>",
+                            "fuzziness": "AUTO"
+                                  
+            }
+
+        }
+
+    }
+
+}
+

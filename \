@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>
+            This is the main title 
+        </title>
+    </head>
+    <body>
+        this is the search page<br>
+            
+
+         <form action="" method = "post" enctype="multipart/form-data">
+             {%csrf_token%}
+         {{search}}
+         <input type="submit">
+         {{questions}}
+    {%load post_tags %}
+    
+        {% for question in questions.1 %}
+        <div>{{question|get_item:'text'}}</div>
+        <img src='http://127.0.0.1:8000/images/{{question | get_item:'image'}}'>
+        {%endfor%}
+    </body>
+
+</html>
