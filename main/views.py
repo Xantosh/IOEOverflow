@@ -99,7 +99,39 @@ def search(request):
 
 # function for ocr computation 
 def ocrcomp():
-    pass
+import cv2
+import numpy as np
+import pytesseract as tess
+
+tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+
+def ocr_core(img):            # function to convert iamge to text
+    text = tess.image_to_string(img)
+    return text
+
+
+img = cv2.imread('lol.png')  # get image from location
+
+
+def get_grayscale(image):          # preprocess to convert to grayscale
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+
+def remove_noise(image):
+    return cv2.medianBlur(image, 5)
+
+
+def threshholding(image):
+    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+
+img = get_grayscale(img)
+img = threshholding(img)
+img = remove_noise(img)
+
+print(ocr_core(img))
+
 
 
 # dummy testing function for ocrcomp
