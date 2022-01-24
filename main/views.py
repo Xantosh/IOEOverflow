@@ -99,44 +99,44 @@ def search(request):
 
 # function for ocr computation 
 def ocrcomp():
-import cv2
-import numpy as np
-import pytesseract as tess
+    import cv2
+    import numpy as np
+    import pytesseract as tess
 
-tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-
-def ocr_core(img):            # function to convert iamge to text
-    text = tess.image_to_string(img)
-    return text
+    tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
-img = cv2.imread('lol.png')  # get image from location
+    def ocr_core(img):            # function to convert iamge to text
+        text = tess.image_to_string(img)
+        return text
 
 
-def get_grayscale(image):          # preprocess to convert to grayscale
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    img = cv2.imread('lol.png')  # get image from location
 
 
-def remove_noise(image):
-    return cv2.medianBlur(image, 5)
+    def get_grayscale(image):          # preprocess to convert to grayscale
+        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
-def threshholding(image):
-    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    def remove_noise(image):
+        return cv2.medianBlur(image, 5)
 
 
-img = get_grayscale(img)
-img = threshholding(img)
-img = remove_noise(img)
+    def threshholding(image):
+        return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-print(ocr_core(img))
+
+    img = get_grayscale(img)
+    img = threshholding(img)
+    img = remove_noise(img)
+
+    return(ocr_core(img))
 
 
 
 # dummy testing function for ocrcomp
 def ocrcompdummy():
-    return "this is a dummy string"
+    return ocrcomp()
 
 def update_els_server(id,text,image):
     es = Elasticsearch()
