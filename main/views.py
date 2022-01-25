@@ -45,7 +45,7 @@ def forum(request):
         obj.save()
     # Third, update the data in the elastic server database
     # call the ocr function and get the string search data to be able to search 
-        imageocr= ocrcompdummy() 
+        imageocr= ocrcompdummy(image) 
         update_els_server(number_of_items,text,imageocr)
         
 
@@ -99,7 +99,7 @@ def search(request):
 
 
 # function for ocr computation 
-def ocrcomp():
+def ocrcomp(u_img):
     import cv2
     import pytesseract as tess
 
@@ -110,8 +110,8 @@ def ocrcomp():
         text = tess.image_to_string(img)
         return text
 
-
-    img = cv2.imread('lol.png')  # get image from location
+    file_path = staticfiles_storage.path('images/' + u_img)
+    img = cv2.imread(file_path)  # get image from location
 
 
     def get_grayscale(image):          # preprocess to convert to grayscale
@@ -135,8 +135,8 @@ def ocrcomp():
 
 
 # dummy testing function for ocrcomp
-def ocrcompdummy():
-    return ocrcomp()
+def ocrcompdummy(u_img):
+    return ocrcomp(u_img)
 
 def update_els_server(id,text,image):
     es = Elasticsearch()
