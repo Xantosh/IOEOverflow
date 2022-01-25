@@ -112,7 +112,7 @@ def update_els_server(id,text,image):
             'text':text,
             'image':image
             } 
-    es.create(index='question',id=id,body=doc)
+    es.create(index='question',id=id,body=doc,doc_type='_doc')
 
 def getID_ElasticSearch(text):
     es = Elasticsearch()
