@@ -2,6 +2,7 @@ from django.shortcuts import render
 from elasticsearch import Elasticsearch
 from .models import *
 from .forms import * 
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 #models used 
@@ -100,7 +101,6 @@ def search(request):
 # function for ocr computation 
 def ocrcomp():
     import cv2
-    import numpy as np
     import pytesseract as tess
 
     tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
