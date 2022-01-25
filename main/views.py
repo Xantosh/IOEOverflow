@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from elasticsearch import Elasticsearch
-#from .models import *
-#from .forms import * 
+from .models import *
+from .forms import * 
 import os
 from django.contrib.staticfiles.storage import staticfiles_storage
 import cv2
@@ -47,9 +47,13 @@ def forum(request):
         obj = Question.objects.create(id=number_of_items,text=text,image=image)
         obj.save()
     # Third, update the data in the elastic server database
-    # call the ocr function and get the string search data to be able to search 
+    # call the ocr function and get the string search data to be able to search
+        filename=Question.objects.filter(id=number_of_items).values()
+        print("check")
         
-        imageocr= ocrcompdummy(image) 
+        image=os.path.join('/mnt/c/Users/Dell/desktop/IOEOverflow/images',filename[0]['image']) # add the iamges path of your pc
+        print(image)
+        imageocr= ocrcomp(image) 
         update_els_server(number_of_items,text,imageocr)
         
 
@@ -134,12 +138,13 @@ def getID_ElasticSearch(text):
     indices=[]
     doc = {
     "query":{
-        "match":{
-            "text":{
+        "multi_match":{
+            
                     "query":text,
+                    "fields":["text","image"],
                             "fuzziness": "AUTO"
                                   
-            }
+            
 
         }
 
