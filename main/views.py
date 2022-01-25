@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from elasticsearch import Elasticsearch
-from .models import *
-from .forms import * 
+#from .models import *
+#from .forms import * 
+import os
 from django.contrib.staticfiles.storage import staticfiles_storage
+import cv2
+import pytesseract as tess
 
 
 #models used 
@@ -45,6 +48,7 @@ def forum(request):
         obj.save()
     # Third, update the data in the elastic server database
     # call the ocr function and get the string search data to be able to search 
+        
         imageocr= ocrcompdummy(image) 
         update_els_server(number_of_items,text,imageocr)
         
@@ -100,43 +104,22 @@ def search(request):
 
 # function for ocr computation 
 def ocrcomp(u_img):
-    import cv2
-    import pytesseract as tess
-
-    tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-
-    def ocr_core(img):            # function to convert iamge to text
-        text = tess.image_to_string(img)
-        return text
-
-    file_path = staticfiles_storage.path('images/' + u_img)
-    img = cv2.imread(file_path)  # get image from location
+    
+   # tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+   ## for windows
 
 
-    def get_grayscale(image):          # preprocess to convert to grayscale
-        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+              # function to convert iamge to text
+    text = tess.image_to_string(u_img)
+    return text
 
-
-    def remove_noise(image):
-        return cv2.medianBlur(image, 5)
-
-
-    def threshholding(image):
-        return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-
-
-    img = get_grayscale(img)
-    img = threshholding(img)
-    img = remove_noise(img)
-
-    return(ocr_core(img))
-
+  
 
 
 # dummy testing function for ocrcomp
 def ocrcompdummy(u_img):
-    return ocrcomp(u_img)
+    return "hey everyone"
+ #   return ocrcomp(u_img)
 
 def update_els_server(id,text,image):
     es = Elasticsearch()
