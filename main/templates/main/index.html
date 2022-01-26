@@ -1,8 +1,21 @@
-html>
+{% load static %}
+<!DOCTYPE html>
+<html>
     <head>
+        <title>{% block title%}{% endblock %}</title>
+        <!-- <link href="{% static "css/blog.css" %}" rel="stylesheet"> # for css--> 
     </head>
-    <body>
-        this is the index
 
-        </body>
+    <body>
+        <div id = "content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div id = "topic">
+            <h2>IOEOVERFLOW</h2>
+            <p>A peer reviewed question answer site for IOE engineering students.</p>
+        </div>
+
+    </body>
 </html>
