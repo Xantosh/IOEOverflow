@@ -5,4 +5,8 @@ packages need for this program
 3. kibana (for testing)
 4. pillow
 5. elasticsearh python client
+6. Tesseract
+7. Pytesseract
+8. opencv
+
 

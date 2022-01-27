@@ -7,4 +7,5 @@ class Question(models.Model):
     image = models.ImageField(null = True)
     upvote= models.IntegerField(default=0)
     downvote = models.IntegerField(default=0)
+    answer = models.ImageField(null=True)
 

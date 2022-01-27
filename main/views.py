@@ -15,7 +15,18 @@ import pytesseract as tess
 def index(request):
     return render(request, "main/index.html")
 
-#Create the forms
+# load specific posts
+
+def particularPost(request,id):
+    question = Question.objects.get(id=id)
+    
+    context={
+        "question":question
+    }
+    return render(request, "main/particularPost.html",context)
+
+    
+    
 
 
 # Posting question view 
@@ -24,6 +35,7 @@ def forum(request):
     imageocr =''
     image=''
     
+    
     if request.method == 'POST':
         # get the data
         form = QuestionForm(request.POST,request.FILES)
@@ -31,6 +43,7 @@ def forum(request):
             print("form valid")
             text=form.cleaned_data["text"]
             image = form.cleaned_data["image"]
+            answer = form.cleaned_data["answer"]
 
         
 
@@ -44,15 +57,16 @@ def forum(request):
         number_of_items += 1
         #update the sql server
         # right now id =2 but after connecting elastic server you need to id= number_of_items
-        obj = Question.objects.create(id=number_of_items,text=text,image=image)
+        obj = Question.objects.create(id=number_of_items,text=text,image=image,answer=answer)
         obj.save()
     # Third, update the data in the elastic server database
     # call the ocr function and get the string search data to be able to search
         filename=Question.objects.filter(id=number_of_items).values()
-        print("check")
+       # print("check")
+        # if you don't use linux you need to add different format of the path below
         
         image=os.path.join('/mnt/c/Users/Dell/desktop/IOEOverflow/images',filename[0]['image']) # add the iamges path of your pc
-        print(image)
+       # print(image)
         imageocr= ocrcomp(image) 
         update_els_server(number_of_items,text,imageocr)
         

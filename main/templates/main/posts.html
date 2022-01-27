@@ -9,9 +9,10 @@ Welcome to posts page
 {{questions}}
         {%load post_tags %}
         {% for question in questions %}
-        <div>{{question |get_item:'text'}}</div>
+        <div><a href="{% url 'particularPost' question.id %} ">{{question |get_item:'text'}}</a></div>
         <!-- this first part of the url might have to be  -->
         <img src='http://127.0.0.1:8000/images/{{question | get_item:'image'}}'>
+       
         {%endfor%}
     </body>
 
