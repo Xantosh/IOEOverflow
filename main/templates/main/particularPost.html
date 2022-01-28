@@ -19,5 +19,30 @@
         </div>
         upvote = {{question.upvote}}     downvote={{question.downvote}}
 
+        
+            {% for comment in comments %}
+        <div class="comments" style="padding: 10px;">
+          <p class="font-weight-bold">
+           
+            <span class=" text-muted font-weight-normal">
+              {{ comment.created }}
+            </span>
+          </p>
+          {{ comment.body | linebreaks }}
+        </div>
+        {% endfor %}
+
+        {% if new_comment %}
+            <h2>Your comment has been added.</h2>
+        {% else %}
+            <h2>Add a new comment</h2>
+            <form method="post">
+                {{ comment_form.as_p }}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary  btn-lg">Add Comment</button>
+            </form>
+        {% endif %}
+       
+
     </body>
 </html>
