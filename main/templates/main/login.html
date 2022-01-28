@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>
+            Login
+        </title>
+    </head>
+    <body>
+        This is Login page
+        <form method="POST", action="">
+            {% csrf_token %}
+            Username:<input type="text" name="username"> <br>
+            Password:<input type="password" name="password">
+            <input type=submit name="dataSubmit">
+
+        </form>
+    </body>
+</html>

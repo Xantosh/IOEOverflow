@@ -15,6 +15,45 @@ import pytesseract as tess
 def index(request):
     return render(request, "main/index.html")
 
+
+# register user view
+def registerUser(request):
+    if request.user.is_authenticated:
+        return  redirect('posts')
+    else:
+
+        form = UserCreationForm()
+        if request.method =='POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+
+        context= {
+            "form":form
+
+        }
+        return render(request,"main/register.html",context)
+
+#login page view
+def loginUser(request):
+    
+    if request.method =='POST':
+        username= request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate (request,username=username,password=password)
+        if user is not None :
+            login(request,user)
+            return redirect('posts')
+    return render(request,"main/login.html")
+
+#logout view 
+def logoutUser(request):
+    logout(request)
+
+    return redirect('login')
+
+
+
 # load specific posts
 
 
