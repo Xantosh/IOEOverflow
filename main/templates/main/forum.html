@@ -3,10 +3,11 @@
     </head>
     <body>
          this is the forum page
+         {{request.user}}<a href="{% url 'logout' %}">Logout</a>
          <br>
          <form action="" method = "post" enctype="multipart/form-data">
              {%csrf_token%}
-         {{form}}
+         {{form.as_p}}
          <input type="submit">
          </form>
     </body>

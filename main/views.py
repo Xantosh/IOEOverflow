@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from elasticsearch import Elasticsearch
 from .models import *
 from .forms import * 
@@ -6,14 +6,54 @@ import os
 from django.contrib.staticfiles.storage import staticfiles_storage
 import cv2
 import pytesseract as tess
-
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 #models used 
 # Question -> id, text, image, upvote, downvote
 
 # Create your views here.
 def index(request):
     return render(request, "main/index.html")
+
+
+# register user view
+def registerUser(request):
+    if request.user.is_authenticated:
+        return  redirect('posts')
+    else:
+
+        form = UserCreationForm()
+        if request.method =='POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+
+        context= {
+            "form":form
+
+        }
+        return render(request,"main/register.html",context)
+
+#login page view
+def loginUser(request):
+    
+    if request.method =='POST':
+        username= request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate (request,username=username,password=password)
+        if user is not None :
+            login(request,user)
+            return redirect('posts')
+    return render(request,"main/login.html")
+
+#logout view 
+def logoutUser(request):
+    logout(request)
+
+    return redirect('login')
+
+
 
 # load specific posts
 
@@ -30,12 +70,14 @@ def particularPost(request,id):
 
 
 # Posting question view 
+@login_required(login_url='login')
 def forum(request):
     text='' 
     imageocr =''
     image=''
     
-    
+    print("check")
+    print(request.user)
     if request.method == 'POST':
         # get the data
         form = QuestionForm(request.POST,request.FILES)
