@@ -9,4 +9,6 @@ packages need for this program
 7. Pytesseract
 8. opencv
 
+these are the packages required
+
 
