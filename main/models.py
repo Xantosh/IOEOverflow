@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
@@ -10,6 +11,9 @@ class Question(models.Model):
     upvote = models.IntegerField(default=0)
     downvote = models.IntegerField(default=0)
     answer = models.ImageField(null=True)
+    author = models.CharField(max_length=100,default="anon")
+    upvoteList = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='upvote_count')
+    downvoteList = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='downvote_count')
 
 
 class QuestionComment(models.Model):

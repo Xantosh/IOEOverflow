@@ -114,6 +114,7 @@ def forum(request):
     if request.method == 'POST':
         # get the data
         form = QuestionForm(request.POST, request.FILES)
+        user = request.user.get_username()
         if form.is_valid():
             print("form valid")
             text = form.cleaned_data["text"]
@@ -131,7 +132,7 @@ def forum(request):
         # update the sql server
         # right now id =2 but after connecting elastic server you need to id= number_of_items
         obj = Question.objects.create(
-            id=number_of_items, text=text, image=image, answer=answer)
+            id=number_of_items, text=text, image=image, answer=answer,author=user)
         obj.save()
     # Third, update the data in the elastic server database
     # call the ocr function and get the string search data to be able to search
