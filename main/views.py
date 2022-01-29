@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render,redirect
 from elasticsearch import Elasticsearch
 from .models import *
 from .forms import *
@@ -6,7 +6,9 @@ import os
 from django.contrib.staticfiles.storage import staticfiles_storage
 import cv2
 import pytesseract as tess
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
 
 # models used
 # Question -> id, text, image, upvote, downvote
@@ -103,6 +105,7 @@ def particularPost(request, id):
 
 
 # Posting question view
+@login_required(login_url='login')
 def forum(request):
     text = ''
     imageocr = ''
