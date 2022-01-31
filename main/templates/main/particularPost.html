@@ -17,7 +17,18 @@
         <div>
             <img src = 'http://127.0.0.1:8000/images/{{question.answer}}'>
         </div>
-        upvote = {{question.upvote}}     downvote={{question.downvote}}
+        <form action='{% url 'upvote' question.id %}' method = "post" >
+            {% csrf_token %}
+            <input type="submit" name="upvote" value="upvote">
+            upvote={{question.upvote}}
+            
+        </form >
+        <form action='{% url 'downvote' question.id %}' method = "post"> 
+            {% csrf_token %}
+            <input type="submit" name="downvote" value="downvote">
+            downvote={{question.downvote}}
+
+        </form>
 
         
             {% for comment in comments %}

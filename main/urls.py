@@ -1,5 +1,5 @@
 from django.urls import path,include
-from main.views import index , forum,questionPost,search,particularPost,registerUser,loginUser,logoutUser
+from main.views import index , forum,questionPost,search,particularPost,registerUser,loginUser,logoutUser,upvote_increment,downvote_increment
 
 urlpatterns = [
         path('',index,name="index"),
@@ -9,6 +9,8 @@ urlpatterns = [
         path('posts/<int:id>',particularPost,name="particularPost"),
         path('register',registerUser,name="register"),
         path('login',loginUser,name="login"),
-        path('logout',logoutUser,name="logout")
+        path('logout',logoutUser,name="logout"),
+        path('upvote/<int:id>',upvote_increment,name="upvote"),
+        path('downvote/<int:id>',downvote_increment,name="downvote")
 
         ]

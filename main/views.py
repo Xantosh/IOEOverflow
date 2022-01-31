@@ -162,6 +162,74 @@ def questionPost(request):
         'questions': questions
     })  # returning the template with the context
 
+# this is the function that handles user upvote the user needs to be logged in inorder to use this
+@login_required(login_url="login")
+def upvote_increment(request,id):
+    user = request.user
+    question= Question.objects.get(id=id)
+        # extract the list of upvoters
+    upvoters=question.upvoteList.all()
+    downvoters=question.downvoteList.all()
+    flag=0
+    for upvoter in upvoters:
+        if upvoter == user:
+            flag =1
+            break
+    if flag == 0:
+        
+        ## append the user to the upvotelist and increment upvote
+        ##Coding remaining##
+        question.upvoteList.add(user)
+        c= question.upvote
+        c+=1
+        question.upvote=c
+        for downvoter in downvoters:
+            if downvoter == user:
+            
+                question.downvoteList.remove(user)
+                count = question.downvote
+                count=count-1
+                question.downvote = count
+        question.save()
+    return redirect('particularPost',id)
+
+## Make a similar function for downvote   
+@login_required(login_url="login")
+def downvote_increment(request,id):
+    user = request.user
+    question= Question.objects.get(id=id)
+        # extract the list of downvoters
+    downvoters=question.downvoteList.all()
+    upvoters=question.upvoteList.all()
+    flag=0
+    for downvoter in downvoters:
+        if downvoter == user:
+            flag =1
+            break
+    if flag == 0:
+        
+        ## append the user to the downvotelist and increment downvote
+        ##Coding remaining##
+        question.downvoteList.add(user)
+        c= question.downvote
+        c+=1
+        question.downvote=c
+        ## check if the user is in upvoter if so remove him from upvoter
+        for upvoter in upvoters:
+            if upvoter == user:
+            
+                question.upvoteList.remove(user)
+                count = question.upvote
+                count=count-1
+                question.upvote = count
+        question.save()
+    
+
+
+
+    return redirect('particularPost',id)
+    
+
 
 def search(request):
     form = SearchForm()
@@ -180,7 +248,7 @@ def search(request):
             data = Question.objects.filter(id=i).values()
             question.append(data)
 
-        print(question)
+        
     context = {
         "search": form,
         "questions": question
@@ -235,7 +303,7 @@ def getID_ElasticSearch(text):
 
     }
     data = es.search(index='question', body=doc)
-    print(data)
+    
     a = len(data['hits']['hits'])
     data = data['hits']['hits']
     for i in range(0, a):
@@ -245,7 +313,7 @@ def getID_ElasticSearch(text):
     print(indices)
     return indices
 
-
+## dummy function for testing only 
 def getID_ElasticSearch_Dummy(text):
 
     return [1, 2]
