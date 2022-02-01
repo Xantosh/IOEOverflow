@@ -1,5 +1,5 @@
 from django.urls import path,include
-from main.views import index , forum,questionPost,search,particularPost,registerUser,loginUser,logoutUser,upvote_increment,downvote_increment
+from main.views import index , forum,questionPost,search,particularPost,registerUser,loginUser,logoutUser,upvote_increment,downvote_increment,freshStart
 
 urlpatterns = [
         path('',index,name="index"),
@@ -11,6 +11,7 @@ urlpatterns = [
         path('login',loginUser,name="login"),
         path('logout',logoutUser,name="logout"),
         path('upvote/<int:id>',upvote_increment,name="upvote"),
-        path('downvote/<int:id>',downvote_increment,name="downvote")
+        path('downvote/<int:id>',downvote_increment,name="downvote"),
+        path('fresh',freshStart,name="freshStart")
 
         ]

@@ -26,3 +26,10 @@ class QuestionComment(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+
+class TotalEntries(models.Model):
+    value = models.IntegerField(default=0)
+    name= models.CharField(max_length=10)
+
+

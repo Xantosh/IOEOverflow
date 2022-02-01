@@ -9,6 +9,7 @@ import pytesseract as tess
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 # models used
 # Question -> id, text, image, upvote, downvote
@@ -121,11 +122,9 @@ def forum(request):
             image = form.cleaned_data["image"]
             answer = form.cleaned_data["answer"]
 
-    # First, count the total number of documents in the index in the elastic search
-        es = Elasticsearch()
-        # current total number of docs in the index
-        number_of_items = es.count(index='question')['count']
-        # count function returns a dictionary so take the count key item
+    
+        number_of_items = TotalEntries.objects.all()[0].value
+   
 
     # Second, update the models use the id from the total number of contents +1
         number_of_items += 1
@@ -145,12 +144,14 @@ def forum(request):
        # print(image)
         imageocr = ocrcomp(image)
         update_els_server(number_of_items, text, imageocr)
-
+        newnumber=TotalEntries.objects.all()[0]
+        newnumber.value=number_of_items
+        newnumber.save()
     form = QuestionForm()
     context = {
         'form': form
     }
-
+     
     return render(request, "main/forum.html", context)
 
 
@@ -312,8 +313,20 @@ def getID_ElasticSearch(text):
 
     print(indices)
     return indices
+def freshStart(request):
+    number=TotalEntries.objects.all()[0]
+    number.value=0
+    number.save()
 
+    return HttpResponse('sucess')
 ## dummy function for testing only 
 def getID_ElasticSearch_Dummy(text):
 
     return [1, 2]
+## This function deletes the respective entry in elastic search pass the id of the entry you want to delete
+# This function is not yet tested by likely runs properly
+def deleteElasticSearchEntry(id):
+    es=elasticsearch()
+    es.delete(question,id)
+    return 
+
