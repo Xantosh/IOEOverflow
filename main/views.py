@@ -1,20 +1,21 @@
-from django.shortcuts import get_object_or_404, render,redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from elasticsearch import Elasticsearch
 from .models import *
 from .forms import *
 import os
 from django.contrib.staticfiles.storage import staticfiles_storage
-import cv2
 import pytesseract as tess
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-
+from django.urls import reverse
 # models used
 # Question -> id, text, image, upvote, downvote
 
 # Create your views here.
+
+
 def index(request):
     return render(request, "main/index.html")
 
@@ -22,39 +23,42 @@ def index(request):
 # register user view
 def registerUser(request):
     if request.user.is_authenticated:
-        return  redirect('posts')
+        return redirect('posts')
     else:
 
         form = UserCreationForm()
-        if request.method =='POST':
+        if request.method == 'POST':
             form = UserCreationForm(request.POST)
             if form.is_valid():
                 form.save()
 
-        context= {
-            "form":form
+        context = {
+            "form": form
 
         }
-        return render(request,"main/register.html",context)
+        return render(request, "main/register.html", context)
 
-#login page view
+# login page view
+
+
 def loginUser(request):
-    
-    if request.method =='POST':
-        username= request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate (request,username=username,password=password)
-        if user is not None :
-            login(request,user)
-            return redirect('posts')
-    return render(request,"main/login.html")
 
-#logout view 
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('posts')
+    return render(request, "main/login.html")
+
+# logout view
+
+
 def logoutUser(request):
     logout(request)
 
     return redirect('login')
-
 
 
 # load specific posts
@@ -93,16 +97,20 @@ def particularPost(request, id):
 # comment section view
 
 
-# def post_comment(request, id):
- #   post = get_object_or_404(Question, id=id)
-  #  # active is for admins to manually activate or deactivate comments
-   # comments = post.comments.filter(active=True)
-    # print(comments)
+def delete_post(request):
 
-   # return render(request, "main/particularPost.html",
-    #              {   'question'
-    #                 'comments': comments,
-    #            })
+    post = get_object_or_404(Question, id=request.POST.get('delete'))
+
+    if request.user.username == post.author:
+        #delete = post.id
+        deleteElasticSearchEntry(post.id)
+        #return redirect('particularPost', post.id)
+    else:
+        delete = post.author
+    context = {
+        "deleted": delete
+    }
+    return render(request, "main/delete.html", context)
 
 
 # Posting question view
@@ -122,16 +130,14 @@ def forum(request):
             image = form.cleaned_data["image"]
             answer = form.cleaned_data["answer"]
 
-    
         number_of_items = TotalEntries.objects.all()[0].value
-   
 
     # Second, update the models use the id from the total number of contents +1
         number_of_items += 1
         # update the sql server
         # right now id =2 but after connecting elastic server you need to id= number_of_items
         obj = Question.objects.create(
-            id=number_of_items, text=text, image=image, answer=answer,author=user)
+            id=number_of_items, text=text, image=image, answer=answer, author=user)
         obj.save()
     # Third, update the data in the elastic server database
     # call the ocr function and get the string search data to be able to search
@@ -144,14 +150,14 @@ def forum(request):
        # print(image)
         imageocr = ocrcomp(image)
         update_els_server(number_of_items, text, imageocr)
-        newnumber=TotalEntries.objects.all()[0]
-        newnumber.value=number_of_items
+        newnumber = TotalEntries.objects.all()[0]
+        newnumber.value = number_of_items
         newnumber.save()
     form = QuestionForm()
     context = {
         'form': form
     }
-     
+
     return render(request, "main/forum.html", context)
 
 
@@ -164,72 +170,72 @@ def questionPost(request):
     })  # returning the template with the context
 
 # this is the function that handles user upvote the user needs to be logged in inorder to use this
+
+
 @login_required(login_url="login")
-def upvote_increment(request,id):
+def upvote_increment(request, id):
     user = request.user
-    question= Question.objects.get(id=id)
-        # extract the list of upvoters
-    upvoters=question.upvoteList.all()
-    downvoters=question.downvoteList.all()
-    flag=0
+    question = Question.objects.get(id=id)
+    # extract the list of upvoters
+    upvoters = question.upvoteList.all()
+    downvoters = question.downvoteList.all()
+    flag = 0
     for upvoter in upvoters:
         if upvoter == user:
-            flag =1
+            flag = 1
             break
     if flag == 0:
-        
-        ## append the user to the upvotelist and increment upvote
+
+        # append the user to the upvotelist and increment upvote
         ##Coding remaining##
         question.upvoteList.add(user)
-        c= question.upvote
-        c+=1
-        question.upvote=c
+        c = question.upvote
+        c += 1
+        question.upvote = c
         for downvoter in downvoters:
             if downvoter == user:
-            
+
                 question.downvoteList.remove(user)
                 count = question.downvote
-                count=count-1
+                count = count-1
                 question.downvote = count
         question.save()
-    return redirect('particularPost',id)
+    return redirect('particularPost', id)
 
-## Make a similar function for downvote   
+# Make a similar function for downvote
+
+
 @login_required(login_url="login")
-def downvote_increment(request,id):
+def downvote_increment(request, id):
     user = request.user
-    question= Question.objects.get(id=id)
-        # extract the list of downvoters
-    downvoters=question.downvoteList.all()
-    upvoters=question.upvoteList.all()
-    flag=0
+    question = Question.objects.get(id=id)
+    # extract the list of downvoters
+    downvoters = question.downvoteList.all()
+    upvoters = question.upvoteList.all()
+    flag = 0
     for downvoter in downvoters:
         if downvoter == user:
-            flag =1
+            flag = 1
             break
     if flag == 0:
-        
-        ## append the user to the downvotelist and increment downvote
+
+        # append the user to the downvotelist and increment downvote
         ##Coding remaining##
         question.downvoteList.add(user)
-        c= question.downvote
-        c+=1
-        question.downvote=c
-        ## check if the user is in upvoter if so remove him from upvoter
+        c = question.downvote
+        c += 1
+        question.downvote = c
+        # check if the user is in upvoter if so remove him from upvoter
         for upvoter in upvoters:
             if upvoter == user:
-            
+
                 question.upvoteList.remove(user)
                 count = question.upvote
-                count=count-1
+                count = count-1
                 question.upvote = count
         question.save()
-    
 
-
-
-    return redirect('particularPost',id)
-    
+    return redirect('particularPost', id)
 
 
 def search(request):
@@ -249,7 +255,6 @@ def search(request):
             data = Question.objects.filter(id=i).values()
             question.append(data)
 
-        
     context = {
         "search": form,
         "questions": question
@@ -304,7 +309,7 @@ def getID_ElasticSearch(text):
 
     }
     data = es.search(index='question', body=doc)
-    
+
     a = len(data['hits']['hits'])
     data = data['hits']['hits']
     for i in range(0, a):
@@ -313,20 +318,25 @@ def getID_ElasticSearch(text):
 
     print(indices)
     return indices
+
+
 def freshStart(request):
-    number=TotalEntries.objects.all()[0]
-    number.value=0
+    number = TotalEntries.objects.all()[0]
+    number.value = 0
     number.save()
 
     return HttpResponse('sucess')
-## dummy function for testing only 
+# dummy function for testing only
+
+
 def getID_ElasticSearch_Dummy(text):
 
     return [1, 2]
-## This function deletes the respective entry in elastic search pass the id of the entry you want to delete
+# This function deletes the respective entry in elastic search pass the id of the entry you want to delete
 # This function is not yet tested by likely runs properly
-def deleteElasticSearchEntry(id):
-    es=elasticsearch()
-    es.delete(question,id)
-    return 
 
+
+def deleteElasticSearchEntry(id):
+    es = elasticsearch()
+    es.delete(question, id)
+    return

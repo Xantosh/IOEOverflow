@@ -29,6 +29,22 @@
             downvote={{question.downvote}}
 
         </form>
+         
+        {% if request.user.is_authenticated %}
+        <p>User is logged in :)</p>
+        <p>Username -->  {{ request.user.username }}</p>
+        {% else %}
+        
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'del'  %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" name="delete" value="{{question.id}}" >Delete</button>
+          </form>
+        {% else %}
+        
+        {% endif %}
 
         
             {% for comment in comments %}
