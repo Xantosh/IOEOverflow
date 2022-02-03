@@ -100,16 +100,16 @@ def particularPost(request, id):
 def delete_post(request):
 
     post = get_object_or_404(Question, id=request.POST.get('delete'))
-
+    context={}
     if request.user.username == post.author:
         #delete = post.id
         deleteElasticSearchEntry(post.id)
         #return redirect('particularPost', post.id)
     else:
         delete = post.author
-    context = {
+        context = {
         "deleted": delete
-    }
+        }
     return render(request, "main/delete.html", context)
 
 
@@ -337,6 +337,6 @@ def getID_ElasticSearch_Dummy(text):
 
 
 def deleteElasticSearchEntry(id):
-    es = elasticsearch()
-    es.delete(question, id)
+    es = Elasticsearch()
+    es.delete(index='question',id= id,doc_type='_doc')
     return
