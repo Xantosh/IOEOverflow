@@ -3,44 +3,91 @@
         <title>
             post page particular
         </title>
+<style>
+.questionText{
+    color:white;
+    text-decoration:none;
+    padding:5px;
+    font-size:30px;
+}
+        .Text{
+            color:white;
+        }
+        body{
+            background-color:#222629;
+        }
+        .questionImages{
+            height:500px;
+            width:1000px;
+            padding:5px;
+        }
+        .answerImages{
+            height:500px;
+            width:1000px;
+            padding:5px;
+
+        }
+        .titleWord{
+            font-size:50px;
+            color:#86c232;
+            font-family:sans-serif;
+            padding:5px;
+        }
+        .buttons{
+            color:white;
+            background-color:#61892f;
+            height:40px;
+            width:100px;
+            font-size:20px;
+
+        }
+</style>
     </head>
     <body>
-        this is the particular post page
-        <div>
+        <div class="titleWord"> Particular Question</div>
+        <div class="questionText">
             {{question.text}}
         </div>
         <div>
-            <img src ='http://127.0.0.1:8000/images/{{question.image}}'>
+            <a href='http://127.0.0.1:8000/images/{{question.image}}'>           <img src ='http://127.0.0.1:8000/images/{{question.image}}'class="questionImages">
 
+            </a>
         </div>
         Answer: 
         <div>
-            <img src = 'http://127.0.0.1:8000/images/{{question.answer}}'>
+            <a href='http://127.0.0.1:8000/images/{{question.answer}}'>  <img src = 'http://127.0.0.1:8000/images/{{question.answer}}'class="answerImages">
+            </a>
         </div>
+        {% if request.user.is_authenticated %}
         <form action='{% url 'upvote' question.id %}' method = "post" >
             {% csrf_token %}
-            <input type="submit" name="upvote" value="upvote">
-            upvote={{question.upvote}}
-            
+            <input class="buttons" type="submit" name="upvote" value="upvote">
         </form >
-        <form action='{% url 'downvote' question.id %}' method = "post"> 
-            {% csrf_token %}
-            <input type="submit" name="downvote" value="downvote">
-            downvote={{question.downvote}}
-
-        </form>
-         
-        {% if request.user.is_authenticated %}
-        <p>User is logged in :)</p>
-        <p>Username -->  {{ request.user.username }}</p>
         {% else %}
         
         {% endif %}
+            <div class="Text">    
+        upvote={{question.upvote}}
+            </div>
+            
+        {% if request.user.is_authenticated %}
+        <form action='{% url 'downvote' question.id %}' method = "post"> 
+            {% csrf_token %}
+            <input type="submit" class="buttons" name="downvote" value="downvote">
+
+        </form>
+        {% else %}
+        
+        {% endif %}
+            <div class="Text">
+            downvote={{question.downvote}}
+            </div>
+         
 
         {% if request.user.is_authenticated %}
         <form action="{% url 'del'  %}" method="POST">
             {% csrf_token %}
-            <button type="submit" name="delete" value="{{question.id}}" >Delete</button>
+            <button class="buttons"type="submit" name="delete" value="{{question.id}}" >Delete</button>
           </form>
         {% else %}
         
@@ -51,22 +98,25 @@
         <div class="comments" style="padding: 10px;">
           <p class="font-weight-bold">
            
-            <span class=" text-muted font-weight-normal">
+            <span class=" text-muted font-weight-normal Text">
               {{ comment.created }}
             </span>
           </p>
+          <div class="Text">
           {{ comment.body | linebreaks }}
+          </div>
         </div>
         {% endfor %}
 
         {% if new_comment %}
-            <h2>Your comment has been added.</h2>
+            <h2 class="Text">Your comment has been added.</h2>
         {% else %}
-            <h2>Add a new comment</h2>
+            <h2 class="Text">Add a new comment</h2>
             <form method="post">
-                {{ comment_form.as_p }}
+                <div class="Text"> {{ comment_form.as_p }}
+                </div>
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary  btn-lg">Add Comment</button>
+                <button type="submit"  class="btn btn-primary  btn-lg buttons"> Comment</button>
             </form>
         {% endif %}
        

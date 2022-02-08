@@ -3,7 +3,6 @@ from django.conf import settings
 
 # Create your models here.
 
-
 class Question(models.Model):
     id = models.IntegerField(primary_key=True)
     text = models.CharField(max_length=1000)
