@@ -108,7 +108,7 @@ def delete_post(request):
         return redirect('posts')
         # return redirect('particularPost', post.id)
     else:
-        delete = post.author
+        delete = "You are not the author."
         context = {
             "deleted": delete
         }
