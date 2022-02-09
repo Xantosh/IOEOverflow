@@ -1,14 +1,39 @@
 <html>
     <head>
+        <style>
+            .questionText{
+                color:white;
+                text-decoration:none;
+                padding:5px;
+                font-size:30px;
+            }
+                    body{
+                        background-color:#222629;
+                    }
+                    
+                    
+                    .titleWord{
+                        font-size:50px;
+                        color:#86c232;
+                        font-family:sans-serif;
+                    }
+                    
+            </style>
+
     </head>
     <body>
-         this is the forum page
+         Upload your question and answers.
+         <div class="titleword">
          {{request.user}}<a href="{% url 'logout' %}">Logout</a>
          <br>
+        </div>
+        <div class="questionText">
          <form action="" method = "post" enctype="multipart/form-data">
              {%csrf_token%}
-         {{form.as_p}}
+            {{form.as_p}}
          <input type="submit">
          </form>
+        </div>
+        
     </body>
 </html>
