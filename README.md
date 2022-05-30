@@ -1,2 +1,2 @@
 # IOEOverflow
-Web application to peer review practised questions 
+A minor project on Web application to peer review practised questions.
